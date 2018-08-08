@@ -22,7 +22,6 @@ app.use(bodyParser.json())
 app.use(expressValidator())
 
 const log = debug('DINA-SCHOOL:server')
-let nextTodoId = 5
 
 function completeInputValidate(req, res, next) {
   req.checkBody('todo', 'invalid todo').notEmpty()
@@ -75,8 +74,11 @@ function decorateStoredTodo(req, res, next) {
   return next()
 }
 
+function fetchLastId(todos) {
+  return todos[todos.length - 1].id
+}
+
 app.get('/todos/', decorateStoredTodosMiddleware, (req, res) => {
-  log(`get is called${nextTodoId}`)
   const { todos } = res.locals
   res.send(todos)
 })
@@ -104,12 +106,9 @@ app.post(
   completeInputValidate,
   (req, res) => {
     const { todos } = res.locals
-    // log(todos)
+    const lastIdentifier = fetchLastId(todos)
     const newTodo = req.body
-    log('new todo-id ', newTodo.id)
-    nextTodoId += 1
-    newTodo.id = nextTodoId
-    log('new todo-id ', newTodo.id)
+    newTodo.id = lastIdentifier + 1
     todos.push(newTodo)
     saveTodos(todos)
     res.status(201).send(newTodo)
