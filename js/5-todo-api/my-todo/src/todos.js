@@ -63,10 +63,12 @@ function saveTodos(chunk) {
 function decorateStoredTodo(req, res, next) {
   const { todos } = res.locals
   const idToFind = Number(req.params.id)
+
   const rackIndex = todos.findIndex(todo => todo.id === idToFind)
+
   if (rackIndex !== -1) {
-    req.todo = todos[rackIndex]
-    req.todoIndex = rackIndex
+    res.locals.todo = todos[rackIndex]
+    res.locals.todoIndex = rackIndex
     next()
   } else {
     res.status(404).send('That todo is not found.')
@@ -88,7 +90,7 @@ app.get(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    res.send(req.todo)
+    res.send(res.locals.todo)
   }
 )
 
@@ -134,12 +136,12 @@ app.put(
     const { todos } = res.locals
     const updatedTodo = req.body
 
-    if (req.todo.id !== updatedTodo.id) {
+    if (res.locals.todo.id !== updatedTodo.id) {
       res.status(400).send('Cannot update Todo Id')
     } else {
-      todos[req.todoIndex] = updatedTodo
+      todos[res.locals.todoIndex] = updatedTodo
       saveTodos(todos)
-      res.status(201).send(todos[req.todoIndex])
+      res.status(201).send(todos[res.locals.todoIndex])
     }
   }
 )
@@ -155,32 +157,35 @@ app.patch(
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    const chosenTodo = todos[req.todoIndex]
+    const chosenTodo = todos[res.locals.todoIndex]
 
     const { body } = req
 
     if (body.todo !== undefined) {
       chosenTodo.todo = body.todo
-      todos[req.todoIndex].todo = body.todo
+      todos[res.locals.todoIndex].todo = body.todo
     } else if (body.done !== undefined) {
       chosenTodo.done = body.done
-      todos[req.todoIndex].done = body.done
+      todos[res.locals.todoIndex].done = body.done
     } else if (body.date !== undefined) {
       chosenTodo.date = body.date
-      todos[req.todoIndex].todo = body.date
+      todos[res.locals.todoIndex].todo = body.date
     }
     saveTodos(todos)
     res.status(201).send(chosenTodo)
   }
 )
-
+/*
+ TODO : removing the same item twice gives an error
+*/
 app.delete(
   '/todos/:id',
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    todos.splice(req.todoIndex, 1)
+
+    todos.splice(res.locals.todoIndex, 1)
     saveTodos(todos)
     res.status(204).send()
   }
