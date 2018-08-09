@@ -128,23 +128,23 @@ app.post(
       "date": "2018-08-25"
     }
 */
+
 app.put(
   '/todos/:id',
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    const updatedTodo = req.body
+    const storedTodo = res.locals.todo
+    const todoInput = req.body
+    const updatedTodo = { ...storedTodo, ...todoInput }
+    todos[res.locals.todoIndex] = updatedTodo
 
-    if (res.locals.todo.id !== updatedTodo.id) {
-      res.status(400).send('Cannot update Todo Id')
-    } else {
-      todos[res.locals.todoIndex] = updatedTodo
-      saveTodos(todos)
-      res.status(201).send(todos[res.locals.todoIndex])
-    }
+    saveTodos(todos)
+    res.status(201).send(todos[res.locals.todoIndex])
   }
 )
+
 /*
   A reminder on how to patch a todo from 'postman' (choose-> PATCH, body+raw+JSON ) 
   call : http://localhost:4001/todos/6 
