@@ -22,7 +22,6 @@ app.use(bodyParser.json())
 app.use(expressValidator())
 
 const log = debug('DINA-SCHOOL:server')
-let nextTodoId = 5
 
 function completeInputValidate(req, res, next) {
   req.checkBody('todo', 'invalid todo').notEmpty()
@@ -64,10 +63,12 @@ function saveTodos(chunk) {
 function decorateStoredTodo(req, res, next) {
   const { todos } = res.locals
   const idToFind = Number(req.params.id)
+
   const rackIndex = todos.findIndex(todo => todo.id === idToFind)
+
   if (rackIndex !== -1) {
-    req.todo = todos[rackIndex]
-    req.todoIndex = rackIndex
+    res.locals.todo = todos[rackIndex]
+    res.locals.todoIndex = rackIndex
     next()
   } else {
     res.status(404).send('That todo is not found.')
@@ -75,8 +76,11 @@ function decorateStoredTodo(req, res, next) {
   return next()
 }
 
+function fetchLastId(todos) {
+  return todos[todos.length - 1].id
+}
+
 app.get('/todos/', decorateStoredTodosMiddleware, (req, res) => {
-  log(`get is called${nextTodoId}`)
   const { todos } = res.locals
   res.send(todos)
 })
@@ -86,7 +90,7 @@ app.get(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    res.send(req.todo)
+    res.send(res.locals.todo)
   }
 )
 
@@ -104,12 +108,9 @@ app.post(
   completeInputValidate,
   (req, res) => {
     const { todos } = res.locals
-    // log(todos)
+    const lastIdentifier = fetchLastId(todos)
     const newTodo = req.body
-    log('new todo-id ', newTodo.id)
-    nextTodoId += 1
-    newTodo.id = nextTodoId
-    log('new todo-id ', newTodo.id)
+    newTodo.id = lastIdentifier + 1
     todos.push(newTodo)
     saveTodos(todos)
     res.status(201).send(newTodo)
@@ -135,15 +136,16 @@ app.put(
     const { todos } = res.locals
     const updatedTodo = req.body
 
-    if (req.todo.id !== updatedTodo.id) {
+    if (res.locals.todo.id !== updatedTodo.id) {
       res.status(400).send('Cannot update Todo Id')
     } else {
-      todos[req.todoIndex] = updatedTodo
+      todos[res.locals.todoIndex] = updatedTodo
       saveTodos(todos)
-      res.status(201).send(todos[req.todoIndex])
+      res.status(201).send(todos[res.locals.todoIndex])
     }
   }
 )
+
 /*
   A reminder on how to patch a todo from 'postman' (choose-> PATCH, body+raw+JSON ) 
   call : http://localhost:4001/todos/6 
@@ -156,32 +158,34 @@ app.patch(
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    const chosenTodo = todos[req.todoIndex]
+    const storedTodo = todos[res.locals.todoIndex]
+    const todoInput = storedTodo
 
     const { body } = req
+    todoInput.todo = body.todo ? body.todo : storedTodo.todo
+    todoInput.done = body.done ? body.done : storedTodo.done
+    todoInput.date = body.date ? body.date : storedTodo.date
+    log('todoInput.todo', todoInput.todo)
+    log('todoInput.done', todoInput.done)
+    log('todoInput.date', todoInput.date)
 
-    if (body.todo !== undefined) {
-      chosenTodo.todo = body.todo
-      todos[req.todoIndex].todo = body.todo
-    } else if (body.done !== undefined) {
-      chosenTodo.done = body.done
-      todos[req.todoIndex].done = body.done
-    } else if (body.date !== undefined) {
-      chosenTodo.date = body.date
-      todos[req.todoIndex].todo = body.date
-    }
+    todos[res.locals.todoIndex] = todoInput
+
     saveTodos(todos)
-    res.status(201).send(chosenTodo)
+    res.status(201).send(todoInput)
   }
 )
-
+/*
+ TODO : removing the same item twice gives an error
+*/
 app.delete(
   '/todos/:id',
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    todos.splice(req.todoIndex, 1)
+
+    todos.splice(res.locals.todoIndex, 1)
     saveTodos(todos)
     res.status(204).send()
   }
