@@ -128,20 +128,21 @@ app.post(
       "date": "2018-08-25"
     }
 */
-
 app.put(
   '/todos/:id',
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    const storedTodo = res.locals.todo
-    const todoInput = req.body
-    const updatedTodo = { ...storedTodo, ...todoInput }
-    todos[res.locals.todoIndex] = updatedTodo
+    const updatedTodo = req.body
 
-    saveTodos(todos)
-    res.status(201).send(todos[res.locals.todoIndex])
+    if (res.locals.todo.id !== updatedTodo.id) {
+      res.status(400).send('Cannot update Todo Id')
+    } else {
+      todos[res.locals.todoIndex] = updatedTodo
+      saveTodos(todos)
+      res.status(201).send(todos[res.locals.todoIndex])
+    }
   }
 )
 
@@ -157,22 +158,21 @@ app.patch(
   decorateStoredTodo,
   (req, res) => {
     const { todos } = res.locals
-    const chosenTodo = todos[res.locals.todoIndex]
+    const storedTodo = todos[res.locals.todoIndex]
+    const todoInput = storedTodo
 
     const { body } = req
+    todoInput.todo = body.todo ? body.todo : storedTodo.todo
+    todoInput.done = body.done ? body.done : storedTodo.done
+    todoInput.date = body.date ? body.date : storedTodo.date
+    log('todoInput.todo', todoInput.todo)
+    log('todoInput.done', todoInput.done)
+    log('todoInput.date', todoInput.date)
 
-    if (body.todo !== undefined) {
-      chosenTodo.todo = body.todo
-      todos[res.locals.todoIndex].todo = body.todo
-    } else if (body.done !== undefined) {
-      chosenTodo.done = body.done
-      todos[res.locals.todoIndex].done = body.done
-    } else if (body.date !== undefined) {
-      chosenTodo.date = body.date
-      todos[res.locals.todoIndex].todo = body.date
-    }
+    todos[res.locals.todoIndex] = todoInput
+
     saveTodos(todos)
-    res.status(201).send(chosenTodo)
+    res.status(201).send(todoInput)
   }
 )
 /*
