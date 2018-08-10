@@ -157,18 +157,18 @@ app.patch(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    const { todos } = res.locals
-    const storedTodo = todos[res.locals.todoIndex]
-    const todoInput = storedTodo
+    const { body: todoInput } = req
+    const { todos, todo: storedInput } = res.locals
 
-    const { body } = req
+    const updatedTodo = {
+      ...storedInput,
+      ...todoInput,
+    }
+    /*
     todoInput.todo = body.todo ? body.todo : storedTodo.todo
     todoInput.done = body.done ? body.done : storedTodo.done
     todoInput.date = body.date ? body.date : storedTodo.date
-    log('todoInput.todo', todoInput.todo)
-    log('todoInput.done', todoInput.done)
-    log('todoInput.date', todoInput.date)
-
+*/
     todos[res.locals.todoIndex] = todoInput
 
     saveTodos(todos)
