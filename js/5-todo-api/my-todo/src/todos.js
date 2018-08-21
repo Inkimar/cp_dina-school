@@ -24,6 +24,8 @@ app.use(expressValidator())
 const log = debug('DINA-SCHOOL:server')
 
 function completeInputValidate(req, res, next) {
+  log('validation')
+
   req.checkBody('todo', 'invalid todo').notEmpty()
   req.checkBody('done', 'invalid done').isBoolean()
   req.checkBody('date', 'invalid date').notEmpty()
@@ -38,12 +40,13 @@ function completeInputValidate(req, res, next) {
     res.statusCode = 400
     return res.json(response)
   }
+
   return next()
 }
 // function partialInputValidate(req, res, next) {}
 
 function readTodosFromFile() {
-  const file = readFileSync('todos.json', 'utf8')
+  const file = readFileSync('todosNew.json', 'utf8')
   return JSON.parse(file)
 }
 
@@ -54,7 +57,7 @@ function decorateStoredTodosMiddleware(req, res, next) {
 
 function saveTodos(chunk) {
   const json = JSON.stringify(chunk)
-  writeFile('todos.json', json, err => {
+  writeFile('todosNew.json', json, err => {
     if (err) log(`Failed to write file: ${err}`)
     else log('written to file.')
   })
@@ -79,6 +82,17 @@ function decorateStoredTodo(req, res, next) {
 function fetchLastId(todos) {
   return todos[todos.length - 1].id
 }
+
+function cors(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
+}
+
+app.use(cors)
 
 app.get('/todos/', decorateStoredTodosMiddleware, (req, res) => {
   const { todos } = res.locals
@@ -113,6 +127,7 @@ app.post(
     newTodo.id = lastIdentifier + 1
     todos.push(newTodo)
     saveTodos(todos)
+
     res.status(201).send(newTodo)
   }
 )
@@ -168,8 +183,8 @@ app.patch(
     todoInput.todo = body.todo ? body.todo : storedTodo.todo
     todoInput.done = body.done ? body.done : storedTodo.done
     todoInput.date = body.date ? body.date : storedTodo.date
-*/
-    todos[res.locals.todoIndex] = todoInput
+    */
+    todos[res.locals.todoIndex] = updatedTodo
 
     saveTodos(todos)
     res.status(201).send(todoInput)
