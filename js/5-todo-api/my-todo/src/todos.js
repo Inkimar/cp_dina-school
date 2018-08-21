@@ -26,7 +26,7 @@ const log = debug('DINA-SCHOOL:server')
 function completeInputValidate(req, res, next) {
   log('validation')
 
-  req.checkBody('todo', 'invalid todo').notEmpty()
+  req.checkBody('name', 'invalid todo').notEmpty()
   req.checkBody('done', 'invalid done').isBoolean()
   req.checkBody('date', 'invalid date').notEmpty()
 
