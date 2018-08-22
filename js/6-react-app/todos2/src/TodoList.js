@@ -6,10 +6,10 @@ export default class TodoList extends React.Component {
     this.state = {
       todos: [],
     }
+    // this.handleClick = this.handleClick.bind(this)
   }
 
   componentDidMount() {
-    let initialsTodos = []
     fetch('http://localhost:4001/todos')
       .then(response => {
         return response.json()
@@ -21,14 +21,25 @@ export default class TodoList extends React.Component {
       })
   }
 
+  /*
+  handleClick(key) {
+    console.log('handles click ' + key)
+    alert('you pressed ' + key)
+  }
+*/
   // https://reactjs.org/docs/lists-and-keys.html
   render() {
-    console.log(this.state.todos)
     let allTodos = this.state.todos
     let listItems = allTodos.map(todo => (
       <li>
         {todo.id} : {todo.name} : {todo.date} -{' '}
         {todo.done === true ? 'true' : 'false'}
+        <div>
+          <button onClick={event => this.props.onClick('delete')}>
+            delete
+          </button>
+          <button onClick={event => this.props.onClick('edit')}>edit</button>
+        </div>
       </li>
     ))
     return (
