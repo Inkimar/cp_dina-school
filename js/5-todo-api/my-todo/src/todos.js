@@ -111,7 +111,7 @@ app.get(
 /*
   A reminder on how to create a new todo from 'postman' (choose-> POST, body+raw+JSON ) 
   {
-          "too": "rest for 40 hours",
+          "name": "rest for 40 hours",
           "done": false,
           "date": "2018-08-11"
   }
@@ -208,4 +208,21 @@ app.delete(
 
 app.listen(PORT, () => {
   log(`Server is listening on port ${PORT}`)
+})
+
+process.on('uncaughtException', err => {
+  log('uncaughtException process exiting in 5000 ms')
+  log(err.stack)
+  setTimeout(() => {
+    process.exit(1)
+  }, 1000)
+})
+
+process.on('unhandledRejection', err => {
+  log('unhandledRejection process exiting in 5000 ms')
+  log(err)
+  log(err.stack)
+  setTimeout(() => {
+    process.exit(1)
+  }, 1000)
 })
