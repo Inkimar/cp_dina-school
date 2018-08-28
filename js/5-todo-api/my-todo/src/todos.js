@@ -89,6 +89,8 @@ function cors(req, res, next) {
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept'
   )
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+
   next()
 }
 
@@ -198,11 +200,11 @@ app.delete(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    const { todos } = res.locals
-
-    todos.splice(res.locals.todoIndex, 1)
+    const { todo, todoIndex, todos } = res.locals
+    todos.splice(todoIndex, 1)
     saveTodos(todos)
-    res.status(204).send()
+    log('removing', todo)
+    res.status(200).send(todo)
   }
 )
 
