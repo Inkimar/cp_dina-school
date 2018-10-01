@@ -1,39 +1,87 @@
 import React from 'react'
+import './AppTodos.css'
 
-class TodoForm extends Component {
+export default class TodoForm extends React.Component {
+  constructor(props) {
+    super(props)
+
+    // läsa på om uncontrolled vs controlled input
+    this.state = {
+      name: '',
+      date: '',
+      done: false,
+    }
+
+    console.log('in the constructor ', props.id)
+
+    this.handleChange = this.handleChange.bind(this)
+    // this.handleSubmit = this.handleSubmit.bind(this)
+  }
+
+  // läsa på om componentDidMount vs componentWillMount
+
+  componentDidMount() {
+    if (this.props.id) {
+      this.fetchTodo(this.props.id)
+    }
+  }
+
+  componentWillUnmount() {
+    this.props.setActiveId(null)
+  }
+
+  fetchTodo(id) {
+    fetch(`http://localhost:4001/todos/${id}`)
+      .then(response => {
+        return response.json()
+      })
+      .then(data => {
+        this.setState({
+          // spread-operatorn
+          ...data,
+        })
+      })
+  }
+
+  handleChange(event, key) {
+    this.setState({
+      [key]: event.target.value,
+    })
+  }
+
   render() {
     return (
-      <div class="container">
-        <form onSubmit={this.handleSubmit}>
-          <label for="item">Item</label>
+      <div className="container">
+        <form onSubmit={event => this.props.onSubmit(event, this.state)}>
+          <label>Item</label>
           <input
-            ref={node => (this.a = node)}
             type="text"
             name="item"
             placeholder="Your item..."
-            onChange={event => this.handleChange(event, 'item')}
+            value={this.state.name}
+            onChange={event => this.handleChange(event, 'name')}
           />
 
-          <label for="date">Date</label>
+          <label>Date</label>
           <input
             type="text"
             name="date"
-            placeholder="On Date..."
+            placeholder="YYYY-MM-DD"
+            value={this.state.date}
             onChange={event => this.handleChange(event, 'date')}
           />
-          <label for="done">Done or Not Done</label>
+          <label>Done or Not Done</label>
           <input
             type="text"
             name="done"
             placeholder="false"
-            disabled
+            disabled={!this.props.id}
+            value={this.state.done}
             onChange={event => this.handleChange(event, 'done')}
           />
-          <button type="submit">OK</button>
+          <button type="submit">Ok</button>
         </form>
       </div>
     )
   }
 }
-
-export default TodoForm
