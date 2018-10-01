@@ -6,10 +6,13 @@ export default class TodoList extends React.Component {
     this.state = {
       todos: [],
     }
-    // this.handleClick = this.handleClick.bind(this)
   }
 
   componentDidMount() {
+    this.fetchAllTodos()
+  }
+
+  fetchAllTodos() {
     fetch('http://localhost:4001/todos')
       .then(response => {
         return response.json()
@@ -21,30 +24,48 @@ export default class TodoList extends React.Component {
       })
   }
 
-  /*
-  handleClick(key) {
-    console.log('handles click ' + key)
-    alert('you pressed ' + key)
+  handleDelete(event, key) {
+    // console.log('deletion ', key)
+    const url = `http://localhost:4001/todos/${key}`
+    fetch(url, {
+      method: 'delete',
+      headers: { 'Content-Type': 'application/json' },
+    }).then(response => {
+      if (response.status >= 400) {
+        throw new Error(response.statusText)
+      }
+      this.fetchAllTodos()
+
+      return response.json()
+    })
   }
-*/
+
   // https://reactjs.org/docs/lists-and-keys.html
   render() {
-    let allTodos = this.state.todos
-    let listItems = allTodos.map(todo => (
-      <li>
+    const allTodos = this.state.todos
+    const listItems = allTodos.map(todo => (
+      <li key={todo.id}>
         {todo.id} : {todo.name} : {todo.date} -{' '}
-        {todo.done === true ? 'true' : 'false'}
+        {todo.done === 'true'
+          ? 'true'
+          : 'false' /* kolla upp 'true' ska vara en boolean, ändra */}
         <div>
-          <button onClick={event => this.props.onClick('delete')}>
+          <button onClick={event => this.handleDelete(event, todo.id)}>
             delete
           </button>
-          <button onClick={event => this.props.onClick('edit')}>edit</button>
+          <button onClick={() => this.props.onClick('update', todo.id)}>
+            edit
+          </button>
         </div>
       </li>
     ))
     return (
       <div>
+        <h1>All of your Todos</h1>
         <ul>{listItems}</ul>
+        <button onClick={event => this.props.onClick('create')}>
+          Add a new Todo
+        </button>
       </div>
     )
   }
