@@ -24,7 +24,9 @@ app.use(expressValidator())
 const log = debug('DINA-SCHOOL:server')
 
 function completeInputValidate(req, res, next) {
-  req.checkBody('todo', 'invalid todo').notEmpty()
+  log('validation')
+
+  req.checkBody('name', 'invalid todo').notEmpty()
   req.checkBody('done', 'invalid done').isBoolean()
   req.checkBody('date', 'invalid date').notEmpty()
 
@@ -38,12 +40,13 @@ function completeInputValidate(req, res, next) {
     res.statusCode = 400
     return res.json(response)
   }
+
   return next()
 }
 // function partialInputValidate(req, res, next) {}
 
 function readTodosFromFile() {
-  const file = readFileSync('todos.json', 'utf8')
+  const file = readFileSync('todosNew.json', 'utf8')
   return JSON.parse(file)
 }
 
@@ -54,7 +57,7 @@ function decorateStoredTodosMiddleware(req, res, next) {
 
 function saveTodos(chunk) {
   const json = JSON.stringify(chunk)
-  writeFile('todos.json', json, err => {
+  writeFile('todosNew.json', json, err => {
     if (err) log(`Failed to write file: ${err}`)
     else log('written to file.')
   })
@@ -80,6 +83,19 @@ function fetchLastId(todos) {
   return todos[todos.length - 1].id
 }
 
+function cors(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE')
+
+  next()
+}
+
+app.use(cors)
+
 app.get('/todos/', decorateStoredTodosMiddleware, (req, res) => {
   const { todos } = res.locals
   res.send(todos)
@@ -97,7 +113,7 @@ app.get(
 /*
   A reminder on how to create a new todo from 'postman' (choose-> POST, body+raw+JSON ) 
   {
-          "too": "rest for 40 hours",
+          "name": "rest for 40 hours",
           "done": false,
           "date": "2018-08-11"
   }
@@ -113,6 +129,7 @@ app.post(
     newTodo.id = lastIdentifier + 1
     todos.push(newTodo)
     saveTodos(todos)
+
     res.status(201).send(newTodo)
   }
 )
@@ -157,19 +174,19 @@ app.patch(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    const { todos } = res.locals
-    const storedTodo = todos[res.locals.todoIndex]
-    const todoInput = storedTodo
+    const { body: todoInput } = req
+    const { todos, todo: storedInput } = res.locals
 
-    const { body } = req
+    const updatedTodo = {
+      ...storedInput,
+      ...todoInput,
+    }
+    /*
     todoInput.todo = body.todo ? body.todo : storedTodo.todo
     todoInput.done = body.done ? body.done : storedTodo.done
     todoInput.date = body.date ? body.date : storedTodo.date
-    log('todoInput.todo', todoInput.todo)
-    log('todoInput.done', todoInput.done)
-    log('todoInput.date', todoInput.date)
-
-    todos[res.locals.todoIndex] = todoInput
+    */
+    todos[res.locals.todoIndex] = updatedTodo
 
     saveTodos(todos)
     res.status(201).send(todoInput)
@@ -183,14 +200,31 @@ app.delete(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    const { todos } = res.locals
-
-    todos.splice(res.locals.todoIndex, 1)
+    const { todo, todoIndex, todos } = res.locals
+    todos.splice(todoIndex, 1)
     saveTodos(todos)
-    res.status(204).send()
+    log('removing', todo)
+    res.status(200).send(todo)
   }
 )
 
 app.listen(PORT, () => {
   log(`Server is listening on port ${PORT}`)
+})
+
+process.on('uncaughtException', err => {
+  log('uncaughtException process exiting in 5000 ms')
+  log(err.stack)
+  setTimeout(() => {
+    process.exit(1)
+  }, 1000)
+})
+
+process.on('unhandledRejection', err => {
+  log('unhandledRejection process exiting in 5000 ms')
+  log(err)
+  log(err.stack)
+  setTimeout(() => {
+    process.exit(1)
+  }, 1000)
 })

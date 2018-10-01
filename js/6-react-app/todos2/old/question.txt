@@ -1,0 +1,38 @@
+https://www.codecademy.com/courses/react-102/lessons/child-updates-parents-state/exercises/child-updates-parents-state-intro?action=resume_content_item
+
+Här :
+// The stateful component class passes down
+  // handleClick to a stateless component class:
+
+Passing:
+https://www.codecademy.com/courses/react-102/lessons/stateless-inherit-stateful-intro/exercises/stateful-component-init?pro-trial-welcome=true
+
+//https://www.mattmorgante.com/technology/dropdown-with-react
+
+ // fungerar detta  ? http://jasonjl.me/blog/2015/04/18/rendering-list-of-elements-in-react-with-jsx/
+  componentDidMount() {
+    const urlTodos = 'http://localhost:4001/todos'
+    fetch(urlTodos)
+      .then(response => response.json())
+      .then(data => this.setState({ todos: data }))
+  }
+
+
+    NumberList() {
+    const numbers = [1, 2, 3, 4, 5]
+    const listItems = numbers.map(number => (
+      <li key={number.toString()}>{number}</li>
+    ))
+    return <ul>{listItems}</ul>
+  }
+
+  TodoList(props) {
+    console.log('start')
+    console.log('todos is ' + props.uppgifter.length)
+    const listItems = props.uppgifter.map(item => <li>{item}</li>)
+    console.log('end ')
+    return <ul>{listItems}</ul>
+    //return null
+  }
+
+  // https://www.w3schools.com/howto/howto_css_contact_form.asp
