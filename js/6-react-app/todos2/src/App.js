@@ -7,12 +7,10 @@ export default class App extends React.Component {
     super(props)
 
     this.state = {
-      inUpdate: false,
-      inDelete: false,
-      inCreate: false,
-      inList: true,
+      activeView: 'list',
       activeId: null,
     }
+
     this.handleClick = this.handleClick.bind(this)
     this.handleCreate = this.handleCreate.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this)
@@ -26,38 +24,25 @@ export default class App extends React.Component {
   handleClick(key, id) {
     if (key === 'delete') {
       this.setState({
-        inDelete: true,
-        inUpdate: false,
-        inCreate: false,
-        inList: false,
+        activeView: key,
         activeId: id,
       })
     } else if (key === 'update') {
       this.setState({
-        inDelete: false,
-        inUpdate: true,
-        inCreate: false,
-        inList: false,
+        activeView: key,
         activeId: id,
       })
     } else if (key === 'create') {
       this.setState({
-        inDelete: false,
-        inUpdate: false,
-        inCreate: true,
-        inList: false,
+        activeView: key,
         activeId: id,
       })
     } else if (key === 'list') {
       this.setState({
-        inDelete: false,
-        inUpdate: false,
-        inCreate: false,
-        inList: true,
+        activeView: key,
         activeId: id,
       })
     }
-    // alert('Main: you pressed ' + key)
   }
 
   handleCreate(event, todo) {
@@ -69,7 +54,7 @@ export default class App extends React.Component {
       body: JSON.stringify(todo),
     })
       .then(response => {
-        //  console.log('Response is ', response)
+        console.log('Response is ', response)
         if (response.status >= 400) {
           throw new Error(response.statusText)
         }
@@ -77,12 +62,11 @@ export default class App extends React.Component {
       })
       .then(() => {
         this.setState({
-          inList: true,
+          activeView: 'list',
         })
       })
       .catch(error => {
-        // console.error('something went wrong .... ', error)
-        //  alert(error)
+        console.error('something went wrong .... ', error)
       })
   }
 
@@ -124,9 +108,10 @@ export default class App extends React.Component {
   // conditional rendering : https://reactjs.org/docs/conditional-rendering.html
   render() {
     let view
-    if (this.state.inList) {
+
+    if (this.state.activeView === 'list') {
       view = <TodoList onClick={this.handleClick} />
-    } else if (this.state.inCreate) {
+    } else if (this.state.activeView === 'create') {
       view = (
         <TodoForm
           onClick={this.handleClick}
@@ -134,7 +119,7 @@ export default class App extends React.Component {
           setActiveId={this.setActiveId}
         />
       )
-    } else if (this.state.inUpdate) {
+    } else if (this.state.activeView === 'update') {
       view = (
         <TodoForm
           onClick={this.handleClick}
@@ -144,6 +129,7 @@ export default class App extends React.Component {
         />
       )
     }
+
     return <div>{view}</div>
   }
 }
