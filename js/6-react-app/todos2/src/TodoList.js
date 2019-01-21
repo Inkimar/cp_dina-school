@@ -1,4 +1,9 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
+const propTypes = {
+  onClick: PropTypes.func.isRequired,
+}
 
 export default class TodoList extends React.Component {
   constructor() {
@@ -26,8 +31,8 @@ export default class TodoList extends React.Component {
 
   handleDelete(event, key) {
     // console.log('deletion ', key)
-    const url = `http://localhost:4001/todos/${key}`
-    fetch(url, {
+    const URL = `http://localhost:4001/todos/${key}`
+    fetch(URL, {
       method: 'delete',
       headers: { 'Content-Type': 'application/json' },
     }).then(response => {
@@ -63,10 +68,12 @@ export default class TodoList extends React.Component {
       <div>
         <h1>All of your Todos</h1>
         <ul>{listItems}</ul>
-        <button onClick={event => this.props.onClick('create')}>
+        <button onClick={() => this.props.onClick('create')}>
           Add a new Todo
         </button>
       </div>
     )
   }
 }
+
+TodoList.propTypes = propTypes

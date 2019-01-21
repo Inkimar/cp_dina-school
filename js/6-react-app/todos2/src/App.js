@@ -8,7 +8,7 @@ export default class App extends React.Component {
 
     this.state = {
       activeView: 'list',
-      activeId: null,
+      activeId: undefined,
     }
 
     this.handleClick = this.handleClick.bind(this)
@@ -22,27 +22,10 @@ export default class App extends React.Component {
   }
 
   handleClick(key, id) {
-    if (key === 'delete') {
-      this.setState({
-        activeView: key,
-        activeId: id,
-      })
-    } else if (key === 'update') {
-      this.setState({
-        activeView: key,
-        activeId: id,
-      })
-    } else if (key === 'create') {
-      this.setState({
-        activeView: key,
-        activeId: id,
-      })
-    } else if (key === 'list') {
-      this.setState({
-        activeView: key,
-        activeId: id,
-      })
-    }
+    this.setState({
+      activeView: key,
+      activeId: id,
+    })
   }
 
   handleCreate(event, todo) {
@@ -54,7 +37,7 @@ export default class App extends React.Component {
       body: JSON.stringify(todo),
     })
       .then(response => {
-        console.log('Response is ', response)
+        // console.log('Response is ', response)
         if (response.status >= 400) {
           throw new Error(response.statusText)
         }
@@ -66,7 +49,7 @@ export default class App extends React.Component {
         })
       })
       .catch(error => {
-        console.error('something went wrong .... ', error)
+        //  console.error('something went wrong .... ', error)
       })
   }
 
