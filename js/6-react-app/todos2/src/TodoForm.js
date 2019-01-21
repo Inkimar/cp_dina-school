@@ -88,6 +88,9 @@ export default class TodoForm extends React.Component {
             onChange={event => this.handleChange(event, 'done')}
           />
           <button type="submit">Ok</button>
+          <button type="button" onClick={() => this.props.onClick('list')}>
+            Cancel
+          </button>
         </form>
       </div>
     )
