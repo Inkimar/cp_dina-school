@@ -29,6 +29,7 @@ export default class App extends React.Component {
   }
 
   handleCreate(event, todo) {
+    console.log('you pressed ok in the TodoForm' )
     event.preventDefault()
 
     fetch('http://localhost:4001/todos', {
@@ -37,7 +38,6 @@ export default class App extends React.Component {
       body: JSON.stringify(todo),
     })
       .then(response => {
-        // console.log('Response is ', response)
         if (response.status >= 400) {
           throw new Error(response.statusText)
         }
@@ -48,12 +48,14 @@ export default class App extends React.Component {
           activeView: 'list',
         })
       })
+    /*
       .catch(error => {
-        //  console.error('something went wrong .... ', error)
+          console.error('something went wrong .... ', error)
       })
+    */
   }
 
-  /* from postman
+  /* Usage from postman
   {
     "id": 2,
     "done": false,
@@ -77,15 +79,6 @@ export default class App extends React.Component {
       this.handleClick('list')
       return response.json()
     })
-    /*
-      .then(() => {
-        this.props.onClick('list')
-      })
-      .catch(error => {
-        console.error('something went wrong .... ', error)
-        alert(error)
-      })
-      */
   }
 
   // conditional rendering : https://reactjs.org/docs/conditional-rendering.html
