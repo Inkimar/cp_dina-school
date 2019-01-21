@@ -2,7 +2,12 @@
   "env": {
     "jest/globals": true
   },
-  "extends": ["eslint-config-airbnb-base", "prettier", "prettier/react"],
+  "extends": [
+    "eslint-config-airbnb-base",
+    "plugin:react/recommended",
+    "prettier",
+    "prettier/react"
+  ],
   "plugins": ["jest", "react", "prettier"],
   "parser": "babel-eslint",
   "globals": {
