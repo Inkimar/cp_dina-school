@@ -29,7 +29,7 @@ export default class App extends React.Component {
   }
 
   handleCreate(event, todo) {
-    console.log('you pressed ok in the TodoForm' )
+    // console.log('you pressed ok in the TodoForm' )
     event.preventDefault()
 
     fetch('http://localhost:4001/todos', {
