@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import './AppTodos.css'
 
 const propTypes = {
-  // id: PropTypes.number,
+  id: PropTypes.number,
   onClick: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   setActiveId: PropTypes.func.isRequired,
@@ -24,14 +24,10 @@ export default class TodoForm extends React.Component {
       done: false,
     }
 
-    // console.log('in the constructor ', props.id)
-
     this.handleChange = this.handleChange.bind(this)
-    // this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   // läsa på om componentDidMount vs componentWillMount
-
   componentDidMount() {
     if (this.props.id) {
       this.fetchTodo(this.props.id)
