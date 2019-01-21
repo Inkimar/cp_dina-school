@@ -21,15 +21,18 @@ export default class App extends React.Component {
     this.setState({ activeId: id })
   }
 
-  handleClick(key, id) {
+  setActiveView(view) {
+    this.setState({ activeView: view })
+  }
+
+  handleClick(view, id) {
     this.setState({
-      activeView: key,
+      activeView: view,
       activeId: id,
     })
   }
 
   handleCreate(event, todo) {
-    // console.log('you pressed ok in the TodoForm' )
     event.preventDefault()
 
     fetch('http://localhost:4001/todos', {
@@ -44,9 +47,7 @@ export default class App extends React.Component {
         return response.json()
       })
       .then(() => {
-        this.setState({
-          activeView: 'list',
-        })
+        this.setActiveView('list')
       })
     /*
       .catch(error => {
@@ -72,23 +73,26 @@ export default class App extends React.Component {
       method: 'put',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(todo),
-    }).then(response => {
-      if (response.status >= 400) {
-        throw new Error(response.statusText)
-      }
-      this.handleClick('list')
-      return response.json()
     })
+      .then(response => {
+        if (response.status >= 400) {
+          throw new Error(response.statusText)
+        }
+        return response.json()
+      })
+      .then(() => {
+        this.setActiveView('list')
+      })
   }
 
   // conditional rendering : https://reactjs.org/docs/conditional-rendering.html
   render() {
-    let view
+    let currentView
 
     if (this.state.activeView === 'list') {
-      view = <TodoList onClick={this.handleClick} />
+      currentView = <TodoList onClick={this.handleClick} />
     } else if (this.state.activeView === 'create') {
-      view = (
+      currentView = (
         <TodoForm
           onClick={this.handleClick}
           onSubmit={this.handleCreate}
@@ -96,7 +100,7 @@ export default class App extends React.Component {
         />
       )
     } else if (this.state.activeView === 'update') {
-      view = (
+      currentView = (
         <TodoForm
           onClick={this.handleClick}
           onSubmit={this.handleUpdate}
@@ -106,6 +110,6 @@ export default class App extends React.Component {
       )
     }
 
-    return <div>{view}</div>
+    return <div>{currentView}</div>
   }
 }
