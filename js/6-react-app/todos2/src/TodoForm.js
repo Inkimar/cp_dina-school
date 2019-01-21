@@ -1,5 +1,17 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import './AppTodos.css'
+
+const propTypes = {
+  id: PropTypes.number,
+  onClick: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  setActiveId: PropTypes.func.isRequired,
+}
+
+const defaultProps = {
+  id: undefined,
+}
 
 export default class TodoForm extends React.Component {
   constructor(props) {
@@ -12,14 +24,10 @@ export default class TodoForm extends React.Component {
       done: false,
     }
 
-    console.log('in the constructor ', props.id)
-
     this.handleChange = this.handleChange.bind(this)
-    // this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   // läsa på om componentDidMount vs componentWillMount
-
   componentDidMount() {
     if (this.props.id) {
       this.fetchTodo(this.props.id)
@@ -85,3 +93,5 @@ export default class TodoForm extends React.Component {
     )
   }
 }
+TodoForm.propTypes = propTypes
+TodoForm.defaultProps = defaultProps
