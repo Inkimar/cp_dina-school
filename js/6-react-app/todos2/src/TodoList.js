@@ -29,9 +29,8 @@ export default class TodoList extends React.Component {
       })
   }
 
-  handleDelete(event, key) {
-    // console.log('deletion ', key)
-    const URL = `http://localhost:4001/todos/${key}`
+  handleDelete(event, id) {
+    const URL = `http://localhost:4001/todos/${id}`
     fetch(URL, {
       method: 'delete',
       headers: { 'Content-Type': 'application/json' },
@@ -51,9 +50,7 @@ export default class TodoList extends React.Component {
     const listItems = allTodos.map(todo => (
       <li key={todo.id}>
         {todo.id} : {todo.name} : {todo.date} -{' '}
-        {todo.done === 'true'
-          ? 'true'
-          : 'false' /* kolla upp 'true' ska vara en boolean, ändra */}
+        {todo.done === 'true' ? 'true' : 'false'}
         <div>
           <button onClick={event => this.handleDelete(event, todo.id)}>
             delete
