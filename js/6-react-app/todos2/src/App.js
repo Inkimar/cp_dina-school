@@ -1,6 +1,7 @@
 import React from 'react'
 import TodoList from './TodoList'
 import TodoForm from './TodoForm'
+import CreateTodo from './CreateTodo'
 
 export default class App extends React.Component {
   constructor(props) {
@@ -11,9 +12,9 @@ export default class App extends React.Component {
       activeId: undefined,
     }
     this.handleClick = this.handleClick.bind(this)
-    this.handleCreate = this.handleCreate.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this)
     this.setActiveId = this.setActiveId.bind(this)
+    this.setActiveView = this.setActiveView.bind(this)
   }
 
   setActiveId(id) {
@@ -30,26 +31,6 @@ export default class App extends React.Component {
       activeId: id,
     })
   }
-
-  handleCreate(event, todo) {
-    event.preventDefault()
-
-    fetch('http://localhost:4001/todos', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(todo),
-    })
-      .then(response => {
-        if (response.status >= 400) {
-          throw new Error(response.statusText)
-        }
-        return response.json()
-      })
-      .then(() => {
-        this.setActiveView('list')
-      })
-  }
-
   /* Usage from postman
   {
     "id": 2,
@@ -79,7 +60,6 @@ export default class App extends React.Component {
       })
   }
 
-  // conditional rendering : https://reactjs.org/docs/conditional-rendering.html
   render() {
     const { activeId, activeView } = this.state
     let currentView
@@ -90,9 +70,9 @@ export default class App extends React.Component {
         break
       case 'create':
         currentView = (
-          <TodoForm
+          <CreateTodo
             onClick={this.handleClick}
-            onSubmit={this.handleCreate}
+            setActiveView={this.setActiveView}
             setActiveId={this.setActiveId}
           />
         )
