@@ -3,3 +3,5 @@ node_modules
 
 # Editor settings
 .vscode
+
+js/5-todo-api/my-todo/todosNew.json
