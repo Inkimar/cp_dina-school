@@ -30,7 +30,7 @@ export default class TodoForm extends React.Component {
   // läsa på om componentDidMount vs componentWillMount
   componentDidMount() {
     if (this.props.id) {
-      this.fetchTodo(this.props.id)
+      this.fetchTodo(this.props.id) // fetching from backend
     }
   }
 
@@ -69,7 +69,6 @@ export default class TodoForm extends React.Component {
             value={this.state.name}
             onChange={event => this.handleChange(event, 'name')}
           />
-
           <label>Date</label>
           <input
             type="text"
