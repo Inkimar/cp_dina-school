@@ -10,7 +10,6 @@ export default class App extends React.Component {
       activeView: 'list',
       activeId: undefined,
     }
-
     this.handleClick = this.handleClick.bind(this)
     this.handleCreate = this.handleCreate.bind(this)
     this.handleUpdate = this.handleUpdate.bind(this)
@@ -49,11 +48,6 @@ export default class App extends React.Component {
       .then(() => {
         this.setActiveView('list')
       })
-    /*
-      .catch(error => {
-          console.error('something went wrong .... ', error)
-      })
-    */
   }
 
   /* Usage from postman
@@ -87,11 +81,24 @@ export default class App extends React.Component {
 
   // conditional rendering : https://reactjs.org/docs/conditional-rendering.html
   render() {
+    const { activeId, activeView } = this.state
     let currentView
 
-    if (this.state.activeView === 'list') {
+    /*
+    switch(expression) {
+      case x:
+        // code block
+        break;
+      case y:
+        // code block
+        break;
+      default:
+        // code block
+    } 
+*/
+    if (activeView === 'list') {
       currentView = <TodoList onClick={this.handleClick} />
-    } else if (this.state.activeView === 'create') {
+    } else if (activeView === 'create') {
       currentView = (
         <TodoForm
           onClick={this.handleClick}
@@ -99,13 +106,14 @@ export default class App extends React.Component {
           setActiveId={this.setActiveId}
         />
       )
-    } else if (this.state.activeView === 'update') {
+    } else if (activeView === 'update') {
+      // send in the chosen item
       currentView = (
         <TodoForm
           onClick={this.handleClick}
           onSubmit={this.handleUpdate}
           setActiveId={this.setActiveId}
-          id={this.state.activeId}
+          id={activeId}
         />
       )
     }
