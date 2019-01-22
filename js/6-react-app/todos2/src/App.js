@@ -84,40 +84,31 @@ export default class App extends React.Component {
     const { activeId, activeView } = this.state
     let currentView
 
-    /*
-    switch(expression) {
-      case x:
-        // code block
-        break;
-      case y:
-        // code block
-        break;
+    switch (activeView) {
+      case 'list':
+        currentView = <TodoList onClick={this.handleClick} />
+        break
+      case 'create':
+        currentView = (
+          <TodoForm
+            onClick={this.handleClick}
+            onSubmit={this.handleCreate}
+            setActiveId={this.setActiveId}
+          />
+        )
+        break
+      case 'update':
+        currentView = (
+          <TodoForm
+            onClick={this.handleClick}
+            onSubmit={this.handleUpdate}
+            setActiveId={this.setActiveId}
+            id={activeId}
+          />
+        )
+        break
       default:
-        // code block
-    } 
-*/
-    if (activeView === 'list') {
-      currentView = <TodoList onClick={this.handleClick} />
-    } else if (activeView === 'create') {
-      currentView = (
-        <TodoForm
-          onClick={this.handleClick}
-          onSubmit={this.handleCreate}
-          setActiveId={this.setActiveId}
-        />
-      )
-    } else if (activeView === 'update') {
-      // send in the chosen item
-      currentView = (
-        <TodoForm
-          onClick={this.handleClick}
-          onSubmit={this.handleUpdate}
-          setActiveId={this.setActiveId}
-          id={activeId}
-        />
-      )
     }
-
     return <div>{currentView}</div>
   }
 }
