@@ -98,7 +98,7 @@ app.use(cors)
 
 app.get('/todos/', decorateStoredTodosMiddleware, (req, res) => {
   const { todos } = res.locals
-  res.send(todos)
+  res.status(200).send(todos)
 })
 
 app.get(
@@ -106,7 +106,7 @@ app.get(
   decorateStoredTodosMiddleware,
   decorateStoredTodo,
   (req, res) => {
-    res.send(res.locals.todo)
+    res.status(200).send(res.locals.todo)
   }
 )
 
