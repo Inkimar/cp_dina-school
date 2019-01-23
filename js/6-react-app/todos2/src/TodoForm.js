@@ -30,7 +30,7 @@ export default class TodoForm extends React.Component {
   // läsa på om componentDidMount vs componentWillMount
   componentDidMount() {
     if (this.props.id) {
-      this.fetchTodo(this.props.id) // fetching from backend
+      this.fetchTodo(this.props.id) // Ida suggest: fetching from backend
     }
   }
 
